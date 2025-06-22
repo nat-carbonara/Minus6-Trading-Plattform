@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minus6 - Trading</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="top-bar">
+    <span id="saldo">Saldo: €1000.00</span>
+    <span id="guadagno">Guadagno: €0.00</span>
+    <input type="number" id="investi" value="100" />
+    <button class="buy" onclick="buy()">BUY</button>
+    <button class="sell" onclick="sell()">SELL</button>
+  </div>
+
+  <canvas id="chart" width="800" height="400"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
