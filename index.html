@@ -2,107 +2,96 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Minus6 - Trading</title>
+  <title>Mini Trading</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: sans-serif;
-      background: #f0f0f0;
       margin: 0;
-      padding: 10px;
+      padding: 5px;
+      background: #eaeaea;
     }
-    #container {
-      width: 700px;
+    #box {
+      width: 360px;
       margin: auto;
       background: #fff;
-      border: 1px solid #ccc;
-      padding: 10px;
+      padding: 6px;
       border-radius: 8px;
+      box-shadow: 0 0 6px #aaa;
     }
     #top {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
       flex-wrap: wrap;
-      font-size: 14px;
-      margin-bottom: 10px;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
     }
     input {
-      width: 60px;
-      font-size: 14px;
+      width: 50px;
+      font-size: 12px;
     }
     button {
       font-size: 12px;
-      padding: 4px 8px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+      padding: 2px 6px;
+      margin-left: 2px;
     }
-    .buy { background: green; color: white; }
-    .sell { background: red; color: white; }
-    canvas { max-width: 100%; height: 300px !important; }
+    #grafico {
+      width: 100%;
+      height: 150px !important;
+    }
   </style>
 </head>
 <body>
-  <div id="container">
+  <div id="box">
     <div id="top">
-      <span id="saldo">Saldo: €1000.00</span>
-      <span id="guadagno">Guadagno: €0.00</span>
-      <input id="investi" type="number" value="100">
-      <button class="buy" onclick="buy()">BUY</button>
-      <button class="sell" onclick="sell()">SELL</button>
+      <div><b>Saldo:</b> <span id="saldo">€1000</span></div>
+      <div><b>Guadagno:</b> <span id="guadagno">€0</span></div>
+      <input id="investi" value="100" type="number">
+      <button onclick="buy()" style="background:green;color:white">BUY</button>
+      <button onclick="sell()" style="background:red;color:white">SELL</button>
     </div>
     <canvas id="grafico"></canvas>
   </div>
 
   <script>
-    let prezzo = 100, saldo = 1000, investito = 0, azioni = 0, tempo = [0], prezzi = [100], index = 1, inTrade = false, forza = 0;
-    const ctx = document.getElementById("grafico").getContext("2d");
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: { labels: tempo, datasets: [{ data: prezzi, label: "Prezzo", borderColor: "blue", fill: false }] },
-      options: { animation: false, plugins: { title: { display: true, text: "Prezzo Attuale: €100.00" } } }
-    });
+    let prezzo=100, saldo=1000, investito=0, azioni=0, tempo=[0], prezzi=[100], i=1, inTrade=false, forza=0;
+    const ctx=document.getElementById("grafico").getContext("2d");
+    const chart=new Chart(ctx,{type:'line',data:{labels:tempo,datasets:[{data:prezzi,label:"Prezzo",borderColor:"blue",fill:false}]},options:{animation:false,scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false},title:{display:true,text:"€100"}}}});
 
-    function aggiorna() {
-      let delta = (Math.random() * 2 - 1) + (forza * Math.random() * 0.5);
-      prezzo = Math.max(1, prezzo + delta);
-      tempo.push(index++); prezzi.push(prezzo);
-      chart.data.labels = tempo; chart.data.datasets[0].data = prezzi;
-      chart.options.plugins.title.text = `Prezzo Attuale: €${prezzo.toFixed(2)}`;
-      chart.update();
-      if (inTrade) {
-        let val = azioni * prezzo, prof = val - investito;
-        let guadEl = document.getElementById("guadagno");
-        guadEl.textContent = `Guadagno: €${prof.toFixed(2)}`;
-        guadEl.style.color = prof >= 0 ? "green" : "red";
+    function aggiorna(){
+      let d=(Math.random()*2-1)+(forza*Math.random()*0.5);
+      prezzo=Math.max(1,prezzo+d); tempo.push(i++); prezzi.push(prezzo);
+      chart.data.labels=tempo; chart.data.datasets[0].data=prezzi;
+      chart.options.plugins.title.text="€"+prezzo.toFixed(2); chart.update();
+      if(inTrade){
+        let val=azioni*prezzo, prof=val-investito;
+        let gEl=document.getElementById("guadagno");
+        gEl.textContent="€"+prof.toFixed(2);
+        gEl.style.color=prof>=0?"green":"red";
       }
-      forza = 0;
-      setTimeout(aggiorna, 500);
+      forza=0;
+      setTimeout(aggiorna,400);
     }
 
-    function buy() {
-      if (inTrade) return alert("Hai già acquistato.");
-      let amnt = parseFloat(document.getElementById("investi").value);
-      if (isNaN(amnt) || amnt <= 0) return alert("Importo non valido.");
-      if (amnt > saldo) return alert("Fondi insufficienti.");
-      azioni = amnt / prezzo; investito = amnt; saldo -= amnt; inTrade = true;
-      document.getElementById("saldo").textContent = `Saldo: €${saldo.toFixed(2)}`;
+    function buy(){
+      if(inTrade) return alert("Già acquistato");
+      let amt=parseFloat(document.getElementById("investi").value);
+      if(isNaN(amt)||amt<=0||amt>saldo) return alert("Importo errato o fondi insufficienti");
+      azioni=amt/prezzo; investito=amt; saldo-=amt; inTrade=true;
+      document.getElementById("saldo").textContent="€"+saldo.toFixed(2);
     }
 
-    function sell() {
-      if (!inTrade) return alert("Devi prima acquistare.");
-      let val = azioni * prezzo, prof = val - investito;
-      saldo += val; azioni = investito = 0; inTrade = false;
-      document.getElementById("saldo").textContent = `Saldo: €${saldo.toFixed(2)}`;
-      let guadEl = document.getElementById("guadagno");
-      guadEl.textContent = `Guadagno: €${prof.toFixed(2)}`;
-      guadEl.style.color = prof >= 0 ? "green" : "red";
+    function sell(){
+      if(!inTrade) return alert("Non hai posizioni aperte");
+      let val=azioni*prezzo, prof=val-investito;
+      saldo+=val; azioni=0; investito=0; inTrade=false;
+      document.getElementById("saldo").textContent="€"+saldo.toFixed(2);
+      document.getElementById("guadagno").textContent="€"+prof.toFixed(2);
     }
 
-    document.addEventListener("keydown", e => {
-      if (e.key === "ArrowUp") forza = 1;
-      if (e.key === "ArrowDown") forza = -1;
+    document.addEventListener("keydown",e=>{
+      if(e.key==="ArrowUp") forza=1;
+      if(e.key==="ArrowDown") forza=-1;
     });
 
     aggiorna();
