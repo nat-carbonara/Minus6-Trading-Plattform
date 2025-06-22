@@ -5,23 +5,56 @@
   <title>Minus6 - Trading</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: sans-serif; text-align: center; margin: 20px; background: #f0f0f0; }
-    #top { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
-    input { width: 60px; }
-    button { padding: 5px 10px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 10px;
+    }
+    #container {
+      width: 700px;
+      margin: auto;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    #top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    input {
+      width: 60px;
+      font-size: 14px;
+    }
+    button {
+      font-size: 12px;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
     .buy { background: green; color: white; }
     .sell { background: red; color: white; }
+    canvas { max-width: 100%; height: 300px !important; }
   </style>
 </head>
 <body>
-  <div id="top">
-    <span id="saldo">Saldo: €1000.00</span>
-    <span id="guadagno">Guadagno: €0.00</span>
-    <input id="investi" type="number" value="100">
-    <button class="buy" onclick="buy()">BUY</button>
-    <button class="sell" onclick="sell()">SELL</button>
+  <div id="container">
+    <div id="top">
+      <span id="saldo">Saldo: €1000.00</span>
+      <span id="guadagno">Guadagno: €0.00</span>
+      <input id="investi" type="number" value="100">
+      <button class="buy" onclick="buy()">BUY</button>
+      <button class="sell" onclick="sell()">SELL</button>
+    </div>
+    <canvas id="grafico"></canvas>
   </div>
-  <canvas id="grafico" width="600" height="300"></canvas>
+
   <script>
     let prezzo = 100, saldo = 1000, investito = 0, azioni = 0, tempo = [0], prezzi = [100], index = 1, inTrade = false, forza = 0;
     const ctx = document.getElementById("grafico").getContext("2d");
@@ -40,8 +73,9 @@
       chart.update();
       if (inTrade) {
         let val = azioni * prezzo, prof = val - investito;
-        document.getElementById("guadagno").textContent = `Guadagno: €${prof.toFixed(2)}`;
-        document.getElementById("guadagno").style.color = prof >= 0 ? "green" : "red";
+        let guadEl = document.getElementById("guadagno");
+        guadEl.textContent = `Guadagno: €${prof.toFixed(2)}`;
+        guadEl.style.color = prof >= 0 ? "green" : "red";
       }
       forza = 0;
       setTimeout(aggiorna, 500);
@@ -61,8 +95,9 @@
       let val = azioni * prezzo, prof = val - investito;
       saldo += val; azioni = investito = 0; inTrade = false;
       document.getElementById("saldo").textContent = `Saldo: €${saldo.toFixed(2)}`;
-      document.getElementById("guadagno").textContent = `Guadagno: €${prof.toFixed(2)}`;
-      document.getElementById("guadagno").style.color = prof >= 0 ? "green" : "red";
+      let guadEl = document.getElementById("guadagno");
+      guadEl.textContent = `Guadagno: €${prof.toFixed(2)}`;
+      guadEl.style.color = prof >= 0 ? "green" : "red";
     }
 
     document.addEventListener("keydown", e => {
